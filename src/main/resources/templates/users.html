@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org" lang="java" charset="UTF-8" contentType="text/html">
+<head>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body>
+
+<h2>Users</h2>
+<table class="table table-striped mt-2 mb-4">
+  <thead class="thead-dark">
+  <tr>
+    <th>id</th>
+    <th>name</th>
+    <th>lastname</th>
+    <th>age</th>
+  </tr>
+  </thead>
+    <tr th:each="user : ${usersList}">
+      <td th:text="${user.id}"></td>
+      <td th:text="${user.name}"></td>
+      <td th:text="${user.lastname}"></td>
+      <td th:text="${user.age}"></td>
+
+      <td><a th:href="@{/edit/{id}(id=${user.id})}">edit</a></td>
+      <td><a th:href="@{/delete/{id}(id=${user.id})}">delete</a></td>
+    </tr>
+</table>
+<td class="my-5"><a href="/signup" class="btn btn-primary">Add a new user<i class="fas fa-user-plus ml-2"></i></a></td>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</body>
+</html>
