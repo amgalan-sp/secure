@@ -12,8 +12,8 @@
     </div>
 </head>
 <body>
-</div>
-<form action="#" th:action="@{/add}" th:object="${user}" method="post">
+
+<form action="#" th:action="@{/admin/add}" th:object="${user}" method="post">
     <div th:if="${user.name}">
       <input type="hidden" name="id" th:value="${user.id}">
     </div>
@@ -31,5 +31,6 @@
         <input type="submit" class="btn btn-primary" value="Add new user">
     </div>
 </form>
+
 </body>
 </html>

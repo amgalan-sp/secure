@@ -29,7 +29,10 @@ public class WebConfig implements WebMvcConfigurer {
     }
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/").setViewName("users");
+        registry.addViewController("/admin/users").setViewName("users");
+        registry.addViewController("/").setViewName("index");
+        registry.addViewController("/user/29").setViewName("user");
+
     }
 }
 
