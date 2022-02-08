@@ -21,8 +21,14 @@ public class UserController {
 
     @Autowired
     UserRepository userRepository;
-    @RequestMapping(value="/appLogin")
-    public String homePage() {
+
+    @GetMapping("/auth/success")
+    public String getSuccessPage(){
+        return "success";
+    }
+
+    @GetMapping("/auth/login")
+    public String loginPage() {
         return "login";
     }
     @GetMapping("/index")
