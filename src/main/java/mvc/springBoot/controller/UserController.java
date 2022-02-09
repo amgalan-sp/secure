@@ -1,9 +1,6 @@
 package mvc.springBoot.controller;
 import mvc.springBoot.repository.UserRepository;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.ui.Model;
 import mvc.springBoot.entity.User;
 //import mvc.springBoot.service.UserService;
@@ -11,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 import javax.validation.Valid;
 
 import java.util.List;
@@ -54,7 +50,7 @@ public class UserController {
     }
 
     @PostMapping("/admin/add")
-    public String addUser(@Valid User user, BindingResult result, Model model) {
+    public String addUser(@Valid User user, BindingResult result) {
         if (result.hasErrors()) {
             return "addPage";
         }
@@ -70,7 +66,7 @@ public class UserController {
     }
 
     @PostMapping("/admin/edit/{id}")
-    public String updateUser(@PathVariable("id") int id, @Valid User user, BindingResult result, Model model) {
+    public String updateUser(@PathVariable("id") int id, @Valid User user, BindingResult result) {
         if (result.hasErrors()) {
             user.setId(id);
             return "editPage";
@@ -79,7 +75,7 @@ public class UserController {
         return "redirect:/users";
     }
     @GetMapping(value = "/admin/delete/{id}")
-    public String deleteUser(@PathVariable("id") int id, Model model) {
+    public String deleteUser(@PathVariable("id") int id) {
         User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
         userRepository.delete(user);
         return "redirect:/admin/users";
