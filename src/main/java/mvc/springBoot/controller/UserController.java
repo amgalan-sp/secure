@@ -39,11 +39,10 @@ public class UserController {
     }
 
     @GetMapping("/user/{id}")
-    public String getUserbyId(@PathVariable("id") int id, Model model) {
-        User user = userService.findUserById(id);
+    public String getUserById(@PathVariable("id") int id, Model model) {
+        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
         model.addAttribute("user", user);
         return "user";
-
     }
     @GetMapping("/admin/signup")
     public String showSignUpForm(User user) {
@@ -55,13 +54,13 @@ public class UserController {
         if (result.hasErrors()) {
             return "addPage";
         }
-        userRepository.save(user);
+        userService.saveUser(user);
         return "redirect:/admin/users";
     }
 
     @GetMapping("/admin/edit/{id}")
     public String showUpdateForm(@PathVariable("id") int id, Model model) {
-        User user = userService.findUserById(id);
+        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
         model.addAttribute("user", user);
         return "editPage";
     }
@@ -72,12 +71,13 @@ public class UserController {
             user.setId(id);
             return "editPage";
         }
-        userService.saveUser(user);
+        userRepository.save(user);
         return "redirect:/users";
     }
     @GetMapping(value = "/admin/delete/{id}")
     public String deleteUser(@PathVariable("id") int id) {
-        userService.deleteUser(id);
+        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
+        userRepository.delete(user);
         return "redirect:/admin/users";
     }
 }
