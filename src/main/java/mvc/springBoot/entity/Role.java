@@ -12,7 +12,7 @@ public class Role implements GrantedAuthority {
     private String name;
     @Transient
     @ManyToOne
-//    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     public User getUser() {
