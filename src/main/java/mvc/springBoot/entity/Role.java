@@ -3,6 +3,7 @@ package mvc.springBoot.entity;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name = "roles")
@@ -10,19 +11,19 @@ public class Role implements GrantedAuthority {
     @Id
     private Long id;
     private String name;
-    @Transient
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
 
-    public User getUser() {
-        return user;
+    @ManyToMany(mappedBy = "roles")
+    private Set<User> users;
+
+
+
+    public Set<User> getUsers() {
+        return users;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUsers(Set<User> users) {
+        this.users = users;
     }
-
 
     public Role() {
     }

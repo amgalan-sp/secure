@@ -1,22 +1,23 @@
 package mvc.springBoot.controller;
-import mvc.springBoot.repository.UserRepository;
 
+import mvc.springBoot.repository.UserRepository;
+import mvc.springBoot.service.UserService;
 import org.springframework.ui.Model;
 import mvc.springBoot.entity.User;
-//import mvc.springBoot.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
-import java.util.List;
-
 @Controller
 public class UserController {
 
     @Autowired
-    UserRepository userRepository;
+    private UserService userService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping("/auth/success")
     public String getSuccessPage(){
@@ -33,13 +34,13 @@ public class UserController {
     }
     @GetMapping("/admin/users")
     public String allUsers(Model model) {
-        model.addAttribute("usersList", userRepository.findAll());
+        model.addAttribute("usersList", userService.allUsers());
         return "users";
     }
 
     @GetMapping("/user/{id}")
     public String getUserbyId(@PathVariable("id") int id, Model model) {
-        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
+        User user = userService.findUserById(id);
         model.addAttribute("user", user);
         return "user";
 
@@ -54,13 +55,13 @@ public class UserController {
         if (result.hasErrors()) {
             return "addPage";
         }
-        userRepository.saveAndFlush(user);
+        userRepository.save(user);
         return "redirect:/admin/users";
     }
 
     @GetMapping("/admin/edit/{id}")
     public String showUpdateForm(@PathVariable("id") int id, Model model) {
-        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
+        User user = userService.findUserById(id);
         model.addAttribute("user", user);
         return "editPage";
     }
@@ -71,13 +72,12 @@ public class UserController {
             user.setId(id);
             return "editPage";
         }
-        userRepository.save(user);
+        userService.saveUser(user);
         return "redirect:/users";
     }
     @GetMapping(value = "/admin/delete/{id}")
     public String deleteUser(@PathVariable("id") int id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
-        userRepository.delete(user);
+        userService.deleteUser(id);
         return "redirect:/admin/users";
     }
 }
