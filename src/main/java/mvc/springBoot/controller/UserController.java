@@ -2,13 +2,17 @@ package mvc.springBoot.controller;
 
 import mvc.springBoot.repository.UserRepository;
 import mvc.springBoot.service.UserService;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
 import mvc.springBoot.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
+import java.security.Principal;
 
 @Controller
 public class UserController {
@@ -19,23 +23,30 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    @GetMapping("/auth/success")
-    public String getSuccessPage(){
-        return "success";
-    }
+//    @GetMapping("/auth/success")
+//    public String getSuccessPage(){
+//        return "success";
+//    }
 
-    @GetMapping("/auth/login")
-    public String loginPage() {
-        return "login";
-    }
+//    @GetMapping("/auth/login")
+//    public String loginPage() {
+//        return "login";
+//    }
     @GetMapping("/index")
     public String StartPage() {
         return "index";
     }
+
     @GetMapping("/admin/users")
     public String allUsers(Model model) {
         model.addAttribute("usersList", userService.allUsers());
         return "users";
+    }
+
+    @GetMapping(value = "user/lk")
+    public String getUserPage2(Model model, Principal principal) {
+        model.addAttribute("user", userService.loadUserByUsername(principal.getName()));
+        return "user";
     }
 
     @GetMapping("/user/{id}")
@@ -44,6 +55,14 @@ public class UserController {
         model.addAttribute("user", user);
         return "user";
     }
+
+//    @GetMapping("/user")
+//    public String getUserById(Model model, Principal principal) {
+//        model.addAttribute("user", userService.loadUserByUsername(principal.getName()));
+////        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+////        model.addAttribute("userAuth" , userService.loadUserByUsername(auth.));
+//        return "user";
+    //    }
     @GetMapping("/admin/signup")
     public String showSignUpForm(User user) {
         return "addPage";
@@ -72,9 +91,9 @@ public class UserController {
             return "editPage";
         }
         userRepository.save(user);
-        return "redirect:/users";
+        return "redirect:/admin/users";
     }
-    @GetMapping(value = "/admin/delete/{id}")
+    @PostMapping(value = "/admin/delete/{id}")
     public String deleteUser(@PathVariable("id") int id) {
         User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
         userRepository.delete(user);
