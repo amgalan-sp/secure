@@ -1,14 +1,11 @@
 package mvc.springBoot.controller;
 
 import mvc.springBoot.repository.UserRepository;
-import mvc.springBoot.service.UserService;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import mvc.springBoot.service.UserServiceImpl;
 import org.springframework.ui.Model;
 import mvc.springBoot.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
@@ -18,20 +15,11 @@ import java.security.Principal;
 public class UserController {
 
     @Autowired
-    private UserService userService;
-
+    private UserServiceImpl userServiceImpl;
     @Autowired
     private UserRepository userRepository;
 
-//    @GetMapping("/auth/success")
-//    public String getSuccessPage(){
-//        return "success";
-//    }
 
-//    @GetMapping("/auth/login")
-//    public String loginPage() {
-//        return "login";
-//    }
     @GetMapping("/index")
     public String StartPage() {
         return "index";
@@ -39,13 +27,13 @@ public class UserController {
 
     @GetMapping("/admin/users")
     public String allUsers(Model model) {
-        model.addAttribute("usersList", userService.allUsers());
+        model.addAttribute("usersList", userServiceImpl.allUsers());
         return "users";
     }
 
     @GetMapping(value = "user/lk")
     public String getUserPage2(Model model, Principal principal) {
-        model.addAttribute("user", userService.loadUserByUsername(principal.getName()));
+        model.addAttribute("user", userServiceImpl.loadUserByUsername(principal.getName()));
         return "user";
     }
 
@@ -73,7 +61,7 @@ public class UserController {
         if (result.hasErrors()) {
             return "addPage";
         }
-        userService.saveUser(user);
+        userServiceImpl.saveUser(user);
         return "redirect:/admin/users";
     }
 

@@ -3,14 +3,12 @@ package mvc.springBoot.config;
 import mvc.springBoot.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -32,26 +30,46 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .authorizeRequests()
-                .antMatchers("/login").anonymous()
-                .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers("/user/**").hasAnyRole("USER", "ADMIN")
-                .anyRequest().authenticated()
-                .and()
-                .formLogin()
-                .successHandler(successUserHandler)
-                .permitAll()
-                .and()
-                .logout()
-                .logoutUrl("/logout")
-                .logoutRequestMatcher(new AntPathRequestMatcher("auth/login", "POST"))
-                .invalidateHttpSession(true)
-                .clearAuthentication(true)
-                .deleteCookies("JSESSIONID")
-                .logoutSuccessUrl("/login")
-                .logoutSuccessUrl("/auth/success")
-                .permitAll();
+            .authorizeRequests()
+            //Доступ только для не зарегистрированных пользователей
+            //Доступ только для пользователей с ролью Администратор
+            .antMatchers("/admin/**").hasRole("ADMIN")
+            .antMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+            //Доступ разрешен всем пользователей
+            .antMatchers("/login").anonymous()
+            //Все остальные страницы требуют аутентификации
+            .anyRequest().authenticated()
+            .and()
+            //Настройка для входа в систему
+            .formLogin()
+            //Перенарпавление на главную страницу после успешного входа
+            .defaultSuccessUrl("/")
+            .permitAll()
+            .and()
+            .logout()
+            .permitAll()
+            .logoutSuccessUrl("/");
     }
+//                .formLogin()
+//                .successHandler(successUserHandler)
+//                .permitAll()
+//                .and()
+//                .authorizeRequests()
+//                .antMatchers("/login").anonymous()
+//                .antMatchers("/admin/**").hasRole("ADMIN")
+//                .antMatchers("/user/**").permitAll()/*hasAnyRole("USER", "ADMIN")*/
+//                .anyRequest().authenticated()
+//                .and()
+//                .logout()
+//                .logoutUrl("/logout")
+//                .logoutRequestMatcher(new AntPathRequestMatcher("auth/login", "POST"))
+//                .invalidateHttpSession(true)
+//                .clearAuthentication(true)
+//                .deleteCookies("JSESSIONID")
+//                .logoutSuccessUrl("/login")
+//                .logoutSuccessUrl("/auth/success")
+//                .permitAll();
+//    }
 
     @Autowired
     protected void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
