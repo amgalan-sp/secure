@@ -1,6 +1,6 @@
 package mvc.springBoot.config;
 
-import mvc.springBoot.service.UserService;
+import mvc.springBoot.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
@@ -17,13 +17,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     SuccessUserHandler successUserHandler;
     @Autowired
-    UserService userService;
+    UserServiceImpl userServiceImpl;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public WebSecurityConfig(@Qualifier("userDetailServiceImpl") UserService userService, SuccessUserHandler successUserHandler) {
-        this.userService = userService;
+    public WebSecurityConfig(@Qualifier("userDetailServiceImpl") UserServiceImpl userServiceImpl, SuccessUserHandler successUserHandler) {
+        this.userServiceImpl = userServiceImpl;
         this.successUserHandler = successUserHandler;
     }
 
@@ -31,18 +31,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
             .authorizeRequests()
-            //Доступ только для не зарегистрированных пользователей
-            //Доступ только для пользователей с ролью Администратор
             .antMatchers("/admin/**").hasRole("ADMIN")
             .antMatchers("/user/**").hasAnyRole("USER", "ADMIN")
-            //Доступ разрешен всем пользователей
             .antMatchers("/login").anonymous()
-            //Все остальные страницы требуют аутентификации
             .anyRequest().authenticated()
             .and()
-            //Настройка для входа в систему
             .formLogin()
-            //Перенарпавление на главную страницу после успешного входа
             .defaultSuccessUrl("/")
             .permitAll()
             .and()
@@ -50,31 +44,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .permitAll()
             .logoutSuccessUrl("/");
     }
-//                .formLogin()
-//                .successHandler(successUserHandler)
-//                .permitAll()
-//                .and()
-//                .authorizeRequests()
-//                .antMatchers("/login").anonymous()
-//                .antMatchers("/admin/**").hasRole("ADMIN")
-//                .antMatchers("/user/**").permitAll()/*hasAnyRole("USER", "ADMIN")*/
-//                .anyRequest().authenticated()
-//                .and()
-//                .logout()
-//                .logoutUrl("/logout")
-//                .logoutRequestMatcher(new AntPathRequestMatcher("auth/login", "POST"))
-//                .invalidateHttpSession(true)
-//                .clearAuthentication(true)
-//                .deleteCookies("JSESSIONID")
-//                .logoutSuccessUrl("/login")
-//                .logoutSuccessUrl("/auth/success")
-//                .permitAll();
-//    }
 
     @Autowired
     protected void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth
-                .userDetailsService(userService)
+                .userDetailsService(userServiceImpl)
                 .passwordEncoder(passwordEncoder);
     }
 
