@@ -12,10 +12,11 @@
 <body class="bg-light">
 <nav class="navbar navbar-dark bg-dark">
   <a class="navbar-brand" href="#">
-    <strong><span th:inline="text"> [[${#httpServletRequest.remoteUser}]]
-      with roles:</span></strong>
-
-<!--    <span th:text="${usersList.}+' '"></span>-->
+    <strong th:text="${userAuth.username}"></strong>
+    with roles:
+    <span th:each="role : ${userAuth.getAuthorities()}">
+      <span th:text="${role}"></span>
+    </span>
   </a>
   <form th:method="GET" th:action="@{/logout}">
     <button type="submit" class="btn btn-dark">
@@ -28,14 +29,13 @@
     <div class="row vh-100">
       <div class="col-lg-2 pl-0 pr-0 pt-3 bg-white">
         <nav class="nav nav-pills flex-column">
-          <div sec:authorize="hasRole('ROLE_ADMIN')">
+          <div>
             <li class="active">
               <a class="nav-link active" href="/admin/users">Admin</a>
             </li>
           </div>
           <li class="active">
-<!--                        /admin/edit/{id}(id=${user.getId()})-->
-            <a class="nav-link" href="@{/user/${id}(id=${user.getId})}">User</a>
+            <a class="nav-link" th:href="@{/user/{username}(username=${userAuth.username})}">User</a>
           </li>
         </nav>
       </div>
@@ -67,6 +67,7 @@
                       <th>First Name</th>
                       <th>Last Name</th>
                       <th>Login</th>
+                      <th>Age</th>
                       <th>Role</th>
                       <th>Edit</th>
                       <th>Delete</th>
@@ -78,7 +79,12 @@
                       <td th:utext = "${user.getName()}"></td>
                       <td th:utext = "${user.getLastname()}"></td>
                       <td th:utext = "${user.getUsername()}"></td>
-                      <td th:utext = "${user.getRoles()}"></td>
+                      <td th:utext = "${user.getAge()}"></td>
+                      <td>
+                        <span th:each="role : ${user.getRoles}">
+                          <span th:text="${role}"></span>
+                        </span>
+                      </td>
                       <td>
                         <button type="button" class="btn btn-info" data-toggle="modal"
                                 th:attr="data-target=${'#edit' + user.getId()}">Edit</button>
@@ -231,6 +237,11 @@
                             <label for="newlastName" class=" font-weight-bold">Last name</label>
                             <input type="text" name="lastname" class="form-control" id="newlastName"
                                    placeholder="Enter your last name" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="newAge" class=" font-weight-bold">Age</label>
+                            <input type="text" name="age" class="form-control" id="newAge"
+                                   placeholder="Enter your age" required>
                           </div>
                           <div class="form-group">
                             <label for="newusername" class=" font-weight-bold">Login</label>
